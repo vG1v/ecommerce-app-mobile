@@ -9,9 +9,9 @@ interface User {
   phone_number: string;
 }
 
+// Updated to better reflect the single identifier field in your UI
 interface LoginCredentials {
-  email?: string;
-  phone_number?: string;
+  identifier: string; 
   password: string;
 }
 
@@ -49,18 +49,25 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
-    const loginPayload = {
-      email: credentials.email || "",
-      phone_number: credentials.phone_number || "",
-      password: credentials.password
-    };
-    
-    const response = await api.login(loginPayload);
-    const data = response.data;
-    await AsyncStorage.setItem('token', data.token);
-    
-    setUser(data.user);
-    return data;
+    try {
+      // Determine if the identifier is an email or phone number
+      const isEmail = credentials.identifier.includes('@');
+      
+      const loginPayload = {
+        [isEmail ? 'email' : 'phone_number']: credentials.identifier,
+        password: credentials.password
+      };
+      
+      const response = await api.login(loginPayload);
+      const data = response.data;
+      await AsyncStorage.setItem('token', data.token);
+      
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {

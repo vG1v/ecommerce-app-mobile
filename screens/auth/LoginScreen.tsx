@@ -28,14 +28,25 @@ const LoginScreen = () => {
   const { login } = useAuth();
 
   const handleSubmit = async () => {
+    // Validation
+    if (!identifier.trim()) {
+      setError('Please enter your email or phone number');
+      return;
+    }
+    
+    if (!password) {
+      setError('Please enter your password');
+      return;
+    }
+    
     setLoading(true);
     setError('');
     setSuccessMessage('');
     
     try {
-      const isEmail = identifier.includes('@');
+      // Update this to match the AuthContext interface
       const credentials = {
-        [isEmail ? 'email' : 'phone_number']: identifier,
+        identifier,
         password
       };
       
