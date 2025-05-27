@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert
-} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../types/navigation';
 import APIService from '../../services/ApiService';
-import { RootStackParamList } from '../../types/navigation'; // You'll need to create this type file
+
+// Import the components we converted earlier
+import AuthLayout from '../../layouts/AuthLayout';
+import AuthFormContainer from '../../components/form/AuthFormContrainer';
+import FormInput from '../../components/form/FormInput';
+import FormError from '../../components/form/FormError';
+import SubmitButton from '../../components/props/SubmitButton';
+import AuthLinkFooter from '../../components/props/AuthLinkFooter';
 
 const RegisterScreen = () => {
   const [formData, setFormData] = useState({
@@ -54,7 +50,7 @@ const RegisterScreen = () => {
         message: 'Registration successful! Please login with your new account.' 
       });
     } catch (err: any) {
-      // Update your error handling to be more type-safe
+      // Handle API errors
       if (err.response && 'data' in err.response) {
         const responseData = err.response.data;
         if (responseData && typeof responseData === 'object' && 'errors' in responseData) {
@@ -74,192 +70,95 @@ const RegisterScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidingView}
-      >
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.card}>
-            <Text style={styles.title}>Create an Account</Text>
-            
-            {error ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
-            
-            {/* Name Field */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Name</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.name}
-                onChangeText={(value) => handleChange('name', value)}
-                placeholder="Enter your name"
-              />
-            </View>
-            
-            {/* Email Field */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.email}
-                onChangeText={(value) => handleChange('email', value)}
-                placeholder="Enter your email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-            
-            {/* Phone Number Field */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Phone Number</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.phone_number}
-                onChangeText={(value) => handleChange('phone_number', value)}
-                placeholder="Enter your phone number"
-                keyboardType="phone-pad"
-              />
-            </View>
-            
-            {/* Password Field */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.password}
-                onChangeText={(value) => handleChange('password', value)}
-                placeholder="Enter password"
-                secureTextEntry
-              />
-            </View>
-            
-            {/* Confirm Password Field */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.password_confirmation}
-                onChangeText={(value) => handleChange('password_confirmation', value)}
-                placeholder="Confirm your password"
-                secureTextEntry
-              />
-            </View>
-            
-            <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
-              onPress={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : (
-                <Text style={styles.buttonText}>Register</Text>
-              )}
-            </TouchableOpacity>
-            
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>
-                Already have an account?{' '}
-              </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login', { message: '' })}>
-                <Text style={styles.link}>Login</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <AuthLayout>
+      <AuthFormContainer title="Create an Account">
+        <FormError error={error} />
+        
+        <View style={styles.form}>
+          <FormInput
+            id="name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChangeText={(value) => handleChange('name', value)}
+            label="Name"
+            required={true}
+            placeholder="Enter your name"
+          />
+          
+          <FormInput
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChangeText={(value) => handleChange('email', value)}
+            label="Email"
+            required={true}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholder="Enter your email"
+          />
+          
+          <FormInput
+            id="phone_number"
+            name="phone_number"
+            type="tel"
+            value={formData.phone_number}
+            onChangeText={(value) => handleChange('phone_number', value)}
+            label="Phone Number"
+            required={true}
+            keyboardType="phone-pad"
+            placeholder="Enter your phone number"
+          />
+          
+          <FormInput
+            id="password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChangeText={(value) => handleChange('password', value)}
+            label="Password"
+            required={true}
+            minLength={8}
+            secureTextEntry={true}
+            placeholder="Enter password"
+          />
+          
+          <FormInput
+            id="password_confirmation"
+            name="password_confirmation"
+            type="password"
+            value={formData.password_confirmation}
+            onChangeText={(value) => handleChange('password_confirmation', value)}
+            label="Confirm Password"
+            required={true}
+            secureTextEntry={true}
+            placeholder="Confirm your password"
+          />
+          
+          <SubmitButton
+            loading={loading}
+            loadingText="Creating Account..."
+            text="Register"
+            onPress={handleSubmit}
+          />
+        </View>
+        
+        <AuthLinkFooter
+          promptText="Already have an account?"
+          linkText="Login"
+          linkTo="Login"
+        />
+      </AuthFormContainer>
+    </AuthLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
+  form: {
+    width: '100%',
+    marginVertical: 8,
   },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollView: {
-    flexGrow: 1,
-    padding: 20,
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  errorContainer: {
-    backgroundColor: '#FFEBEE',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: '#D32F2F',
-    fontSize: 14,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#555',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#2196F3',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  footerText: {
-    color: '#666',
-    fontSize: 14,
-  },
-  link: {
-    color: '#2196F3',
-    fontSize: 14,
-    fontWeight: '500',
-  }
 });
 
 export default RegisterScreen;

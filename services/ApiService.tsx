@@ -1,33 +1,31 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-import { API_URL_ANDROID, API_URL_IOS, DEV_MACHINE_IP } from '@env';
+import { API_URL_ANDROID, API_URL_IOS, PHYSICAL_DEVICE_URL } from '@env';
+import { isDevice } from 'expo-device';
 
-// Configure URL based on platform and environment
-const isAndroid = Platform.OS === 'android';
-const isSimulator = Platform.OS === 'ios' && 
-  !!/iPhone Simulator|iPad Simulator/.test(navigator.userAgent);
-
-let baseURL = '';
-if (isAndroid) {
-  baseURL = API_URL_ANDROID;
-} else if (isSimulator) {
-  baseURL = API_URL_IOS;
+let baseURL;
+if (Platform.OS === 'android') {
+  baseURL = isDevice ? PHYSICAL_DEVICE_URL : API_URL_ANDROID;
 } else {
-  baseURL = `http://${DEV_MACHINE_IP}:8000/api`;
+  baseURL = isDevice ? PHYSICAL_DEVICE_URL : API_URL_IOS;
 }
 
+console.log('Platform:', Platform.OS);
+console.log('Is physical device:', isDevice);
+console.log('Using API URL:', baseURL);
+
+// Create Axios instance
 const api = axios.create({
   baseURL,
   timeout: 10000,
-  withCredentials: false,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
 });
 
-// Auth token interceptor
+// Add auth token interceptor
 api.interceptors.request.use(async (config) => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -40,10 +38,29 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      // The request was made and the server responded with an error status
+      console.error('API Error Response:', error.response.status, error.response.data);
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('API No Response:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('API Request Error:', error.message);
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
 const APIService = {
   // Authentication
-  login: (credentials: { email?: string; phone_number?: string; password: string }) => 
-    api.post('/login', credentials),
+  login: (loginData: { login: string; password: string }) => 
+    api.post('/login', loginData),
   
   register: async (userData: { 
     name: string; 
@@ -79,10 +96,25 @@ const APIService = {
   getProducts: () => api.get('/products'),
   getProduct: (id: number | string) => api.get(`/products/${id}`),
   
+  // Categories
+  getCategories: () => api.get('/categories'),
+  getProductsByCategory: (categoryId: number) => api.get(`/categories/${categoryId}/products`),
+  
+  // Search
+  searchProducts: (searchTerm: string) => api.get(`/products/search?q=${encodeURIComponent(searchTerm)}`),
+  
   // Cart
   getCart: () => api.get('/cart'),
   addToCart: (productId: number, quantity: number = 1) => 
-    api.post('/cart/add', { product_id: productId, quantity })
+    api.post('/cart/add', { product_id: productId, quantity }),
+  
+  // Cart management methods
+  updateCartItem: (itemId: number, quantity: number) => 
+    api.put(`/cart/items/${itemId}`, { quantity }),
+  removeCartItem: (itemId: number) => 
+    api.delete(`/cart/items/${itemId}`),
+  clearCart: () => 
+    api.delete('/cart')
 };
 
 export default APIService;

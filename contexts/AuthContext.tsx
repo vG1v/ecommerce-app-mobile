@@ -9,9 +9,8 @@ interface User {
   phone_number: string;
 }
 
-// Updated to better reflect the single identifier field in your UI
 interface LoginCredentials {
-  identifier: string; 
+  login: string;  // Changed from identifier to login
   password: string;
 }
 
@@ -38,7 +37,6 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
           setUser(response.data);
         }
       } catch (error) {
-        // If there's an error, clear the token
         await AsyncStorage.removeItem('token');
       } finally {
         setLoading(false);
@@ -50,15 +48,8 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      // Determine if the identifier is an email or phone number
-      const isEmail = credentials.identifier.includes('@');
-      
-      const loginPayload = {
-        [isEmail ? 'email' : 'phone_number']: credentials.identifier,
-        password: credentials.password
-      };
-      
-      const response = await api.login(loginPayload);
+      // Just pass the login credentials directly - the API expects login and password
+      const response = await api.login(credentials);
       const data = response.data;
       await AsyncStorage.setItem('token', data.token);
       

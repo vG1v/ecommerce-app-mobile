@@ -1,80 +1,70 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Auth Screens
 import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
 
-// Main App Screens (create placeholder components for now)
-const DashboardScreen = () => (
-  <View style={styles.center}>
-    <Text>Dashboard Screen</Text>
-  </View>
-);
+// Public Screens
+import Homepage from './screens/Homepage';
+// import ProductDetailScreen from './screens/ProductDetailScreen';
+// import ProfileScreen from './screens/ProfileScreen';
+// import CartScreen from './screens/CartScreen';
+// import DashboardScreen from './screens/DashboardScreen';
+// import OrdersScreen from './screens/OrdersScreen';
+// import WishlistScreen from './screens/WishlistScreen';
+// import SettingsScreen from './screens/SettingsScreen';
 
-const ProfileScreen = () => (
-  <View style={styles.center}>
-    <Text>Profile Screen</Text>
-  </View>
-);
+// Define the navigator types
+const Stack = createStackNavigator();
 
-// Create navigation stacks
-const AuthStack = createStackNavigator();
-const MainTab = createBottomTabNavigator();
-
-// Auth navigation stack
-const AuthNavigator = () => (
-  <AuthStack.Navigator screenOptions={{ headerShown: false }}>
-    <AuthStack.Screen name="Login" component={LoginScreen} />
-    <AuthStack.Screen name="Register" component={RegisterScreen} />
-  </AuthStack.Navigator>
-);
-
-// Main app navigation tabs
-const MainNavigator = () => (
-  <MainTab.Navigator>
-    <MainTab.Screen name="Dashboard" component={DashboardScreen} />
-    <MainTab.Screen name="Profile" component={ProfileScreen} />
-  </MainTab.Navigator>
-);
-
-// Root component to handle auth state
-const RootNavigator = () => {
-  const { user, loading } = useAuth();
-  
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#2196F3" />
-      </View>
-    );
-  }
-  
-  return (
-    <NavigationContainer>
-      {user ? <MainNavigator /> : <AuthNavigator />}
-    </NavigationContainer>
-  );
-};
-
-export default function App() {
+// Main App Component
+function App() {
   return (
     <AuthProvider>
       <StatusBar style="auto" />
-      <RootNavigator />
+      <NavigationContainer>
+        <Stack.Navigator 
+          initialRouteName="Homepage" 
+          screenOptions={{ headerShown: false }}
+        >
+          {/* Public screens */}
+          <Stack.Screen name="Homepage" component={Homepage} />
+          
+          {/* Auth screens */}
+          <Stack.Screen 
+            name="Login" 
+            component={LoginScreen} 
+            options={{ presentation: 'modal' }}
+          />
+          <Stack.Screen 
+            name="Register" 
+            component={RegisterScreen} 
+            options={{ presentation: 'modal' }}
+          />
+          
+          {/* Uncomment these as you build the screens */}
+          {/* <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Cart" component={CartScreen} />
+          <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+          <Stack.Screen name="Orders" component={OrdersScreen} />
+          <Stack.Screen name="Wishlist" component={WishlistScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} /> */}
+        </Stack.Navigator>
+      </NavigationContainer>
     </AuthProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  center: {
+  container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
+
+export default App;
