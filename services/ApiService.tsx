@@ -5,7 +5,14 @@ import { API_URL_ANDROID, API_URL_IOS, PHYSICAL_DEVICE_URL } from '@env';
 import { isDevice } from 'expo-device';
 
 let baseURL;
-if (Platform.OS === 'android') {
+
+// Add a constant for BlueStacks testing
+const BLUESTACKS_MODE = true; // Set to true when testing with BlueStacks
+
+if (BLUESTACKS_MODE) {
+  // Always use your machine's IP for BlueStacks
+  baseURL = PHYSICAL_DEVICE_URL;
+} else if (Platform.OS === 'android') {
   baseURL = isDevice ? PHYSICAL_DEVICE_URL : API_URL_ANDROID;
 } else {
   baseURL = isDevice ? PHYSICAL_DEVICE_URL : API_URL_IOS;
