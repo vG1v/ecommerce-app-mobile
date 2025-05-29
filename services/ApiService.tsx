@@ -4,6 +4,10 @@ import { Platform } from 'react-native';
 import { API_URL_ANDROID, API_URL_IOS, PHYSICAL_DEVICE_URL } from '@env';
 import { isDevice } from 'expo-device';
 
+// Define the storage key for custom API URL
+const CUSTOM_API_URL_KEY = 'CUSTOM_API_URL';
+
+// Calculate default baseURL using existing logic
 let baseURL;
 
 // Add a constant for BlueStacks testing
@@ -20,17 +24,33 @@ if (BLUESTACKS_MODE) {
 
 console.log('Platform:', Platform.OS);
 console.log('Is physical device:', isDevice);
-console.log('Using API URL:', baseURL);
+console.log('Default API URL:', baseURL);
 
-// Create Axios instance
+// Create Axios instance with initial baseURL
 const api = axios.create({
-  baseURL,
+  baseURL, // Start with calculated URL
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
 });
+
+// Try to load custom API URL from storage on startup
+(async () => {
+  try {
+    const customApiUrl = await AsyncStorage.getItem(CUSTOM_API_URL_KEY);
+    if (customApiUrl) {
+      // Override baseURL if custom URL exists
+      api.defaults.baseURL = customApiUrl;
+      console.log('Using custom API URL from settings:', customApiUrl);
+    } else {
+      console.log('No custom API URL found, using default:', baseURL);
+    }
+  } catch (error) {
+    console.error('Error loading custom API URL:', error);
+  }
+})();
 
 // Add auth token interceptor
 api.interceptors.request.use(async (config) => {

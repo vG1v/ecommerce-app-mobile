@@ -8,6 +8,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
 import CartScreen from './screens/CartScreen';
+import DeveloperSettingsScreen from './screens/DeveloperSettingsScreen';
 import BottomNav from './components/layout/BottomNav';
 
 
@@ -53,6 +54,13 @@ function App() {
           <Stack.Screen 
             name="Cart" 
             component={CartScreen} 
+            options={{
+              cardStyle: { backgroundColor: '#fffbeb' },
+            }}
+          />
+          <Stack.Screen 
+            name="Settings" 
+            component={DeveloperSettingsScreen} 
             options={{
               cardStyle: { backgroundColor: '#fffbeb' },
             }}

@@ -80,6 +80,14 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                                 <Text style={styles.loginButtonText}>Login</Text>
                             </TouchableOpacity>
 
+                            {/* Add API Settings button here */}
+                            <TouchableOpacity
+                                style={[styles.settingsButton, { backgroundColor: secondaryButtonBg }]}
+                                onPress={() => navigation.navigate('Settings')}
+                            >
+                                <Text style={[styles.settingsButtonText, { color: secondaryButtonText }]}>API Settings</Text>
+                            </TouchableOpacity>
+
                             <TouchableOpacity
                                 style={[styles.registerButton, { backgroundColor: secondaryButtonBg }]}
                                 onPress={() => navigation.navigate('Register')}
@@ -178,6 +186,17 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                                         <Text style={styles.mobileLoginButtonText}>Login</Text>
                                     </TouchableOpacity>
 
+                                    {/* Add API Settings button here */}
+                                    <TouchableOpacity
+                                        style={[styles.mobileSettingsButton, { backgroundColor: secondaryButtonBg }]}
+                                        onPress={() => {
+                                            navigation.navigate('Settings');
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        <Text style={[styles.mobileSettingsButtonText, { color: secondaryButtonText }]}>API Settings</Text>
+                                    </TouchableOpacity>
+
                                     <TouchableOpacity
                                         style={[styles.mobileRegisterButton, { backgroundColor: secondaryButtonBg }]}
                                         onPress={() => {
@@ -264,6 +283,16 @@ const styles = StyleSheet.create({
     },
     loginButtonText: {
         color: 'white',
+        fontWeight: '500',
+        fontSize: 14,
+    },
+    settingsButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 6,
+        marginRight: 8,
+    },
+    settingsButtonText: {
         fontWeight: '500',
         fontSize: 14,
     },
@@ -375,6 +404,16 @@ const styles = StyleSheet.create({
     },
     mobileLoginButtonText: {
         color: 'white',
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    mobileSettingsButton: {
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    mobileSettingsButtonText: {
         fontSize: 16,
         fontWeight: '500',
     },
