@@ -448,13 +448,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchButton: {
-    backgroundColor: "#b45309", // amber-600
+    backgroundColor: "#b45309",
     paddingHorizontal: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   categorySection: {
-    backgroundColor: "#fef3c7", // amber-100
+    backgroundColor: "#fef3c7", 
     paddingVertical: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -466,17 +466,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   categoryButton: {
-    backgroundColor: "#fde68a", // amber-200
+    backgroundColor: "#fde68a", 
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 24,
     marginRight: 12,
   },
   selectedCategoryButton: {
-    backgroundColor: "#d97706", // amber-600
+    backgroundColor: "#d97706", 
   },
   categoryButtonText: {
-    color: "#92400e", // amber-800
+    color: "#92400e",
     fontWeight: "500",
     fontSize: 14,
   },
@@ -495,8 +495,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4, 
     elevation: 3,
-    minHeight: 190, // Slightly reduce minimum height
-    paddingBottom: 4, // Add bottom padding
+    minHeight: 190,
+    paddingBottom: 4,
   },
   sectionTitleContainer: {
     flexDirection: "row",
@@ -514,13 +514,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   seeAllButton: {
-    backgroundColor: "#fde68a", // yellow-300
+    backgroundColor: "#fde68a", 
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
   seeAllButtonText: {
-    color: "#92400e", // amber-800
+    color: "#92400e", 
     fontWeight: "600",
     fontSize: 14,
   },
@@ -538,29 +538,29 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 3,
     width: 120,
-    height: 125, // Slightly reduce height
+    height: 125, 
     borderWidth: 1,
-    borderColor: "#fff5d2", // Lighter border color
+    borderColor: "#fff5d2", 
   },
   flashDealImage: {
     width: "100%",
     height: 80,
     resizeMode: "cover",
-    backgroundColor: "#f59e0b", // Add background color to match placeholder
+    backgroundColor: "#f59e0b",
   },
   flashDealInfo: {
     padding: 8,
-    height: 45, // Fixed height for info section
-    justifyContent: "space-between", // Space between price and discount
+    height: 45,
+    justifyContent: "space-between", 
   },
   flashDealPrice: {
     color: "#b45309",
     fontWeight: "700",
     fontSize: 14,
-    marginBottom: 2, // Add spacing
+    marginBottom: 2, 
   },
   flashDealDiscount: {
-    color: "#dc2626", // red-600
+    color: "#dc2626",
     fontSize: 12,
     fontWeight: "600",
   },
@@ -583,7 +583,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   productCardContainer: {
-    width: (width - 48) / 2, // Consistent width calculation
+    width: (width - 48) / 2, 
     marginHorizontal: 4,
   },
 });
