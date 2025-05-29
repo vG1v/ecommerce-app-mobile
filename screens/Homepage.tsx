@@ -13,14 +13,12 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import APIService from "../services/ApiService";
 import { useAuth } from "../contexts/AuthContext";
 import ProductCard from "../components/card/ProductCard";
 import NavBar from "../components/layout/NavBar";
-import { RootStackParamList } from "../types/navigation";
 
 // Types
 interface Product {
@@ -38,7 +36,7 @@ interface Category {
 
 const Homepage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation() as any;
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -109,7 +107,8 @@ const Homepage: React.FC = () => {
 
   const handleAddToCart = (productId: number) => {
     if (!isAuthenticated) {
-      navigation.navigate("Login", { returnTo: "Homepage" });
+      // Remove the returnTo parameter since we're simplifying navigation
+      navigation.navigate("Login");
       return;
     }
 
@@ -184,7 +183,6 @@ const Homepage: React.FC = () => {
       theme="yellow"
       onPress={() => {
         navigation.navigate("ProductDetail", { id: item.id });
-        // If you need to handle adding to cart, do it here or adjust the ProductCard component
       }}
     />
   );

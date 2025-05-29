@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../types/navigation';
 import APIService from '../../services/ApiService';
 
 // Import the components we converted earlier
@@ -23,7 +21,7 @@ const RegisterScreen = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Register'>>();
+  const navigation = useNavigation() as any;
 
   const handleChange = (field: string, value: string) => {
     setFormData({
@@ -45,10 +43,9 @@ const RegisterScreen = () => {
       // Register user
       await APIService.register(formData);
       
-      // Navigate to login with success message
-      navigation.navigate('Login', { 
-        message: 'Registration successful! Please login with your new account.' 
-      });
+      // Simplified: Just navigate to Login after successful registration
+      navigation.navigate('Login');
+      
     } catch (err: any) {
       // Handle API errors
       if (err.response && 'data' in err.response) {
@@ -71,94 +68,115 @@ const RegisterScreen = () => {
 
   return (
     <AuthLayout>
-      <AuthFormContainer title="Create an Account">
-        <FormError error={error} />
-        
-        <View style={styles.form}>
-          <FormInput
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChangeText={(value) => handleChange('name', value)}
-            label="Name"
-            required={true}
-            placeholder="Enter your name"
-          />
-          
-          <FormInput
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChangeText={(value) => handleChange('email', value)}
-            label="Email"
-            required={true}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholder="Enter your email"
-          />
-          
-          <FormInput
-            id="phone_number"
-            name="phone_number"
-            type="tel"
-            value={formData.phone_number}
-            onChangeText={(value) => handleChange('phone_number', value)}
-            label="Phone Number"
-            required={true}
-            keyboardType="phone-pad"
-            placeholder="Enter your phone number"
-          />
-          
-          <FormInput
-            id="password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChangeText={(value) => handleChange('password', value)}
-            label="Password"
-            required={true}
-            minLength={8}
-            secureTextEntry={true}
-            placeholder="Enter password"
-          />
-          
-          <FormInput
-            id="password_confirmation"
-            name="password_confirmation"
-            type="password"
-            value={formData.password_confirmation}
-            onChangeText={(value) => handleChange('password_confirmation', value)}
-            label="Confirm Password"
-            required={true}
-            secureTextEntry={true}
-            placeholder="Confirm your password"
-          />
-          
-          <SubmitButton
-            loading={loading}
-            loadingText="Creating Account..."
-            text="Register"
-            onPress={handleSubmit}
-          />
-        </View>
-        
-        <AuthLinkFooter
-          promptText="Already have an account?"
-          linkText="Login"
-          linkTo="Login"
-        />
-      </AuthFormContainer>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <AuthFormContainer title="Create an Account">
+            <FormError error={error} />
+            
+            <View style={styles.form}>
+              <FormInput
+                id="name"
+                name="name"
+                type="text"
+                value={formData.name}
+                onChangeText={(value) => handleChange('name', value)}
+                label="Name"
+                required={true}
+                placeholder="Enter your name"
+                containerStyle={styles.inputContainer}
+              />
+              
+              <FormInput
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChangeText={(value) => handleChange('email', value)}
+                label="Email"
+                required={true}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                placeholder="Enter your email"
+                containerStyle={styles.inputContainer}
+              />
+              
+              <FormInput
+                id="phone_number"
+                name="phone_number"
+                type="tel"
+                value={formData.phone_number}
+                onChangeText={(value) => handleChange('phone_number', value)}
+                label="Phone Number"
+                required={true}
+                keyboardType="phone-pad"
+                placeholder="Enter your phone number"
+                containerStyle={styles.inputContainer}
+              />
+              
+              <FormInput
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChangeText={(value) => handleChange('password', value)}
+                label="Password"
+                required={true}
+                minLength={8}
+                secureTextEntry={true}
+                placeholder="Enter password"
+                containerStyle={styles.inputContainer}
+              />
+              
+              <FormInput
+                id="password_confirmation"
+                name="password_confirmation"
+                type="password"
+                value={formData.password_confirmation}
+                onChangeText={(value) => handleChange('password_confirmation', value)}
+                label="Confirm Password"
+                required={true}
+                secureTextEntry={true}
+                placeholder="Confirm your password"
+                containerStyle={styles.inputContainer}
+              />
+              
+              <SubmitButton
+                loading={loading}
+                loadingText="Creating Account..."
+                text="Register"
+                onPress={handleSubmit}
+              />
+            </View>
+            
+            <AuthLinkFooter
+              promptText="Already have an account?"
+              linkText="Login"
+              linkTo="Login"
+            />
+          </AuthFormContainer>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </AuthLayout>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   form: {
     width: '100%',
-    marginVertical: 8,
+    marginVertical: 4,
   },
+  inputContainer: {
+    marginBottom: 8, 
+  }
 });
 
 export default RegisterScreen;

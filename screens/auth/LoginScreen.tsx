@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../types/navigation';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../contexts/AuthContext';
 
-// Import the components we converted earlier
+// Import components
 import AuthLayout from '../../layouts/AuthLayout';
 import AuthFormContainer from '../../components/form/AuthFormContrainer';
 import FormInput from '../../components/form/FormInput';
@@ -19,11 +17,8 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const route = useRoute<RouteProp<RootStackParamList, 'Login'>>();
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Login'>>();
+  const navigation = useNavigation() as any;
   const { login } = useAuth();
-  
-  const returnTo = route.params?.returnTo || 'Homepage';
 
   const handleSubmit = async () => {
     // Validation
@@ -41,40 +36,15 @@ const LoginScreen = () => {
     setError('');
     
     try {
-      // Match the credentials format with your API
       const loginData = {
-        login: identifier.trim(),  // Changed from identifier to login to match your API
+        login: identifier.trim(),
         password
       };
       
       await login(loginData);
       
-      // Handle navigation based on returnTo screen type
-      switch (returnTo) {
-        case 'Dashboard':
-          navigation.navigate('Dashboard');
-          break;
-        case 'Profile':
-          navigation.navigate('Profile');
-          break;
-        case 'ProductDetail':
-          // If we don't have an ID to navigate with, go to a safe default
-          navigation.navigate('Dashboard');
-          break;
-        case 'VendorDetail':
-          // If we don't have a slug to navigate with, go to a safe default
-          navigation.navigate('Dashboard');
-          break;
-        case 'Cart':
-          navigation.navigate('Cart');
-          break;
-        case 'Homepage':
-          navigation.navigate('Homepage');
-          break;
-        default:
-          // Default fallback
-          navigation.navigate('Homepage');
-      }
+      navigation.navigate('Main', { screen: 'Home' });
+      
     } catch (err: unknown) {
       let errorMessage = 'Login failed. Please check your credentials.';
       if (err && typeof err === 'object' && 'response' in err) {

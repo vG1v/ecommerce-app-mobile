@@ -1,22 +1,25 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { RootStackParamList } from '../../types/navigation';
 
 interface AuthLinkFooterProps {
   promptText: string;
   linkText: string;
-  linkTo: keyof RootStackParamList;
+  linkTo: string;
 }
+
+type RootStackParamList = {
+  Main: undefined;
+  [key: string]: undefined | object;
+};
 
 const AuthLinkFooter: React.FC<AuthLinkFooterProps> = ({ 
   promptText, 
   linkText, 
   linkTo 
 }) => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
   return (
     <View style={styles.container}>
@@ -24,7 +27,7 @@ const AuthLinkFooter: React.FC<AuthLinkFooterProps> = ({
         <Text style={styles.promptText}>{promptText} </Text>
         <Text 
           style={styles.linkText}
-          onPress={() => navigation.navigate(linkTo as any)}
+          onPress={() => navigation.navigate(linkTo)}
         >
           {linkText}
         </Text>
@@ -32,7 +35,7 @@ const AuthLinkFooter: React.FC<AuthLinkFooterProps> = ({
       
       <TouchableOpacity 
         style={styles.homeLink}
-        onPress={() => navigation.navigate('Homepage')}
+        onPress={() => navigation.navigate('Main')}
       >
         <Ionicons name="arrow-back" size={16} color="#d97706" />
         <Text style={styles.homeLinkText}>Back to Homepage</Text>
@@ -65,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   homeLinkText: {
-    color: '#d97706', // amber-600
+    color: '#d97706',
     fontSize: 14,
     marginLeft: 4,
   }

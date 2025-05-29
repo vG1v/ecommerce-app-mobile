@@ -34,7 +34,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
             {/* Logo and branding */}
             <TouchableOpacity 
               style={styles.logoContainer}
-              onPress={() => navigation.navigate('Homepage')}
+              onPress={() => navigation.navigate('Main', { screen: 'Home' })} 
             >
               <View style={styles.iconContainer}>
                 <Ionicons name="bag" size={36} color="#d97706" />
@@ -47,7 +47,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
             <View style={styles.card}>
               {/* Golden accent bar at top of card */}
               <LinearGradient 
-                colors={['#fbbf24', '#f59e0b']} // amber-400 to yellow-500
+                colors={['#fbbf24', '#f59e0b']}
                 start={{x: 0, y: 0}} 
                 end={{x: 1, y: 0}}
                 style={styles.accentBar} 

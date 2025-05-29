@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
 interface FormInputProps {
   id: string;
@@ -14,6 +14,7 @@ interface FormInputProps {
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  containerStyle?: StyleProp<ViewStyle>; 
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -29,8 +30,8 @@ const FormInput: React.FC<FormInputProps> = ({
   secureTextEntry,
   keyboardType,
   autoCapitalize,
+  containerStyle,
 }) => {
-  // Determine keyboard type based on input type if not explicitly provided
   const getKeyboardType = () => {
     if (keyboardType) return keyboardType;
     
@@ -47,7 +48,7 @@ const FormInput: React.FC<FormInputProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <Text style={styles.label}>
         {label}{required && <Text style={styles.required}> *</Text>}
       </Text>
@@ -69,18 +70,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    color: '#b45309', // amber-700
+    color: '#b45309',
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
   },
   required: {
-    color: '#dc2626', // red-600
+    color: '#dc2626',
   },
   input: {
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#fcd34d', // amber-300
+    borderColor: '#fcd34d',
     borderRadius: 6,
     padding: 12,
     fontSize: 16,

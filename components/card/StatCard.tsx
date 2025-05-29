@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types/navigation';
 import { Ionicons } from '@expo/vector-icons'; 
-import { navigateSafely } from '../../utils/navigation';
+import { navigateSafely } from '../../types/navigation';
 
 interface StatCardProps {
   title: string;

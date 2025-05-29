@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, StatusBar, Modal } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
-import DropdownMenu from './DropdownMenu';
-import { RootStackParamList } from '../../types/navigation';
 
 interface NavbarProps {
     cartItemsCount?: number;
     theme?: 'default' | 'yellow';
 }
 
+
 const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }) => {
     const { user, logout } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const route = useRoute();
+    const navigation = useNavigation() as any;
 
     const isYellow = theme === 'yellow';
 
@@ -24,29 +21,10 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
         await logout();
     };
 
-    // Check if a route is active
-    const isActive = (routeName: string) => {
-        return route.name === routeName;
-    };
-
-    // Fixed menu items to handle nested navigation correctly
-    const menuItems = [
-        { label: 'Your Profile', to: 'Profile' as keyof RootStackParamList },
-        { label: 'Your Orders', to: 'Orders' as keyof RootStackParamList },
-        { label: 'Wishlist', to: 'Wishlist' as keyof RootStackParamList },
-        { label: 'Settings', to: 'Settings' as keyof RootStackParamList },
-        {
-            label: 'Sign out',
-            onClick: handleLogout,
-            type: 'button' as const
-        }
-    ];
-
     // Theme colors
     const navBgColor = isYellow ? '#f59e0b' : '#ffffff';
     const textColor = isYellow ? '#92400e' : '#111827';
     const logoColor = isYellow ? '#78350f' : '#2563eb';
-    const activeIndicatorColor = isYellow ? '#92400e' : '#3b82f6';
     const buttonBgColor = isYellow ? '#b45309' : '#2563eb';
     const secondaryButtonBg = isYellow ? '#fef3c7' : '#f3f4f6';
     const secondaryButtonText = isYellow ? '#92400e' : '#4b5563';
@@ -58,17 +36,11 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
             {/* Main Navbar */}
             <View style={styles.container}>
                 <TouchableOpacity
-                    // FIXED: Logo navigation to Homepage in MainTabs
                     onPress={() => navigation.navigate('Homepage')}
                     style={styles.logoContainer}
                 >
                     <Text style={[styles.logo, { color: logoColor }]}>E-Shop</Text>
                 </TouchableOpacity>
-
-                {/* Center Navigation - Hidden on mobile, would be shown on tablet/desktop */}
-                <View style={styles.navigationHidden}>
-                    {/* Navigation items would go here */}
-                </View>
 
                 {/* Right side - User controls */}
                 <View style={styles.rightControls}>
@@ -76,14 +48,13 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                         <View style={styles.userControls}>
                             <TouchableOpacity
                                 style={styles.iconButton}
-                                // FIXED: Heart icon navigation to Homepage in MainTabs
-                                onPress={() => navigation.navigate('Homepage')}
+                                onPress={() => {}}
                             >
                                 <Ionicons name="heart-outline" size={24} color={textColor} />
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.iconButton}
-                                onPress={() => navigation.navigate('Cart')}
+                                onPress={() => {}}
                             >
                                 <Ionicons name="cart-outline" size={24} color={textColor} />
                                 {cartItemsCount > 0 && (
@@ -93,18 +64,18 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                                 )}
                             </TouchableOpacity>
 
-                            <DropdownMenu
-                                userName={user.name || ''}
-                                userEmail={user.email}
-                                menuItems={menuItems}
-                                theme={theme}
-                            />
+                            <TouchableOpacity
+                                style={styles.iconButton}
+                                onPress={() => setIsMenuOpen(true)}
+                            >
+                                <Ionicons name="person-circle-outline" size={26} color={textColor} />
+                            </TouchableOpacity>
                         </View>
                     ) : (
                         <View style={styles.authButtons}>
                             <TouchableOpacity
                                 style={[styles.loginButton, { backgroundColor: buttonBgColor }]}
-                                onPress={() => navigation.navigate('Login', {})}
+                                onPress={() => navigation.navigate('Login')}
                             >
                                 <Text style={styles.loginButtonText}>Login</Text>
                             </TouchableOpacity>
@@ -145,56 +116,6 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                         </View>
 
                         <View style={styles.mobileMenuItems}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.mobileMenuItem,
-                                    isActive('Home') && { backgroundColor: isYellow ? '#fef3c7' : '#f3f4f6' }
-                                ]}
-                                onPress={() => {
-                                    navigation.navigate('Homepage');
-                                    setIsMenuOpen(false);
-                                }}
-                            >
-                                <Text style={[styles.mobileMenuItemText, { color: textColor }]}>Home</Text>
-                                {isActive('Home') && (
-                                    <View style={[styles.activeIndicator, { backgroundColor: activeIndicatorColor }]} />
-                                )}
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={[
-                                    styles.mobileMenuItem,
-                                    isActive('Products') && { backgroundColor: isYellow ? '#fef3c7' : '#f3f4f6' }
-                                ]}
-                                onPress={() => {
-                                    navigation.navigate('Homepage');
-                                    setIsMenuOpen(false);
-                                }}
-                            >
-                                <Text style={[styles.mobileMenuItemText, { color: textColor }]}>Products</Text>
-                                {isActive('Products') && (
-                                    <View style={[styles.activeIndicator, { backgroundColor: activeIndicatorColor }]} />
-                                )}
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={[
-                                    styles.mobileMenuItem,
-                                    isActive('Dashboard') && { backgroundColor: isYellow ? '#fef3c7' : '#f3f4f6' }
-                                ]}
-                                onPress={() => {
-                                    navigation.navigate('Dashboard');
-                                    setIsMenuOpen(false);
-                                }}
-                            >
-                                <Text style={[styles.mobileMenuItemText, { color: textColor }]}>Dashboard</Text>
-                                {isActive('Dashboard') && (
-                                    <View style={[styles.activeIndicator, { backgroundColor: activeIndicatorColor }]} />
-                                )}
-                            </TouchableOpacity>
-
-                            {/* More navigation items can be added here */}
-
                             {/* User specific items if logged in */}
                             {user && (
                                 <View style={styles.mobileUserSection}>
@@ -210,24 +131,40 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                                         </View>
                                     </View>
 
-                                    {menuItems.map((item, index) => (
-                                        <TouchableOpacity
-                                            key={index}
-                                            style={styles.mobileMenuItem}
-                                            onPress={() => {
-                                                setIsMenuOpen(false);
-                                                if (item.type === 'button' && item.onClick) {
-                                                    item.onClick();
-                                                } else if (item.to) {
-                                                    navigation.navigate(item.to as any);
-                                                }
-                                            }}
-                                        >
-                                            <Text style={[styles.mobileMenuItemText, { color: textColor }]}>
-                                                {item.label}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
+                                    {/* Simple menu items without complex navigation */}
+                                    <TouchableOpacity
+                                        style={styles.mobileMenuItem}
+                                        onPress={() => {
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        <Text style={[styles.mobileMenuItemText, { color: textColor }]}>
+                                            Your Profile
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.mobileMenuItem}
+                                        onPress={() => {
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        <Text style={[styles.mobileMenuItemText, { color: textColor }]}>
+                                            Your Orders
+                                        </Text>
+                                    </TouchableOpacity>
+                                    
+                                    <TouchableOpacity
+                                        style={styles.mobileMenuItem}
+                                        onPress={() => {
+                                            setIsMenuOpen(false);
+                                            handleLogout();
+                                        }}
+                                    >
+                                        <Text style={[styles.mobileMenuItemText, { color: textColor }]}>
+                                            Sign out
+                                        </Text>
+                                    </TouchableOpacity>
                                 </View>
                             )}
 
@@ -237,7 +174,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                                     <TouchableOpacity
                                         style={[styles.mobileLoginButton, { backgroundColor: buttonBgColor }]}
                                         onPress={() => {
-                                            navigation.navigate('Login', {});
+                                            navigation.navigate('Login');
                                             setIsMenuOpen(false);
                                         }}
                                     >

@@ -10,7 +10,7 @@ interface User {
 }
 
 interface LoginCredentials {
-  login: string;  // Changed from identifier to login
+  login: string;
   password: string;
 }
 
@@ -48,7 +48,6 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      // Just pass the login credentials directly - the API expects login and password
       const response = await api.login(credentials);
       const data = response.data;
       await AsyncStorage.setItem('token', data.token);

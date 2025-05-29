@@ -10,7 +10,7 @@ interface AuthFormContainerProps {
 const AuthFormContainer: React.FC<AuthFormContainerProps> = ({ children, title }) => {
   return (
     <LinearGradient
-      colors={['#fffbeb', '#fef3c7']} // amber-50 to yellow-50
+      colors={['#fffbeb', '#fef3c7']}
       style={styles.container}
     >
       <Text style={styles.title}>{title}</Text>
