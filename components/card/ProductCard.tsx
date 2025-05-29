@@ -17,14 +17,21 @@ interface ProductCardProps {
   product: Product;
   theme?: 'default' | 'yellow';
   onPress?: () => void;
+  onAddToCart?: () => void; // Add this line
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'default', onPress }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'default', onPress, onAddToCart }) => {
   const { isAuthenticated } = useAuth();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const route = useRoute();
   
   const handleAddToCart = () => {
+    if (onAddToCart) {
+      // If the parent provided an onAddToCart function, use it
+      onAddToCart();
+      return;
+    }
+    
     if (!isAuthenticated) {
       navigation.navigate('Login', { 
         returnTo: route.name as keyof RootStackParamList || 'Dashboard'
@@ -32,7 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'default', o
       return;
     }
     
-    // Add to cart logic here
+    // Default add to cart logic if no onAddToCart provided
     // APIService.addToCart(product.id, 1)...
   };
 
@@ -80,7 +87,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'default', o
           {theme === 'yellow' && (
             <TouchableOpacity 
               style={styles.addButton}
-              onPress={handleAddToCart}
+              onPress={handleAddToCart}  // Update this to use our new handler
             >
               <Text style={styles.addButtonText}>Add to Cart</Text>
             </TouchableOpacity>

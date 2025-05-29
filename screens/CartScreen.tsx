@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import NavBar from '../components/layout/NavBar';
 import APIService from '../services/ApiService';
 import { useAuth } from '../contexts/AuthContext';
+import CheckoutModal, { OrderFormData } from '../components/form/CheckoutModal';
 
 interface CartItem {
   id: number;
@@ -43,6 +44,10 @@ const CartScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [submittingOrder, setSubmittingOrder] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderId, setOrderId] = useState<number | null>(null);
 
   // Fetch cart on component mount
   useEffect(() => {
@@ -189,8 +194,48 @@ const CartScreen: React.FC = () => {
     );
   };
 
+  const handlePlaceOrder = async (formData: OrderFormData) => {
+    try {
+      setSubmittingOrder(true);
+      
+      // Call your API to create the order
+      const response = await APIService.createOrder(formData);
+      
+      // Handle success
+      setOrderId(response.data.id);
+      setOrderSuccess(true);
+      setShowCheckoutModal(false);
+      
+      // Clear the cart
+      await APIService.clearCart();
+      setCart({ items: [], subtotal: 0, tax: 0, total: 0 });
+      
+      // Show success message
+      Alert.alert(
+        "Order Placed Successfully",
+        `Your order #${response.data.id} has been received and is being processed.`,
+        [
+          { 
+            text: "OK", 
+            onPress: () => navigation.navigate('Main')
+          }
+        ]
+      );
+      
+    } catch (error) {
+      Alert.alert(
+        "Order Failed",
+        "There was a problem processing your order. Please try again.",
+        [{ text: "OK" }]
+      );
+      console.error('Order submission error:', error);
+    } finally {
+      setSubmittingOrder(false);
+    }
+  };
+
   const handleCheckout = () => {
-    navigation.navigate('Checkout', { cart });
+    setShowCheckoutModal(true);
   };
 
   const renderCartItem = (item: CartItem) => {
@@ -250,7 +295,7 @@ const CartScreen: React.FC = () => {
         </Text>
         <TouchableOpacity
           style={styles.continueShoppingButton}
-          onPress={() => navigation.navigate('Homepage')}
+          onPress={() => navigation.navigate('Main', { screen: 'Home' })}
         >
           <Text style={styles.continueShoppingButtonText}>Continue Shopping</Text>
         </TouchableOpacity>
@@ -333,6 +378,14 @@ const CartScreen: React.FC = () => {
           </View>
         )}
       </ScrollView>
+
+      <CheckoutModal
+        isVisible={showCheckoutModal}
+        onClose={() => setShowCheckoutModal(false)}
+        onSubmit={handlePlaceOrder}
+        isSubmitting={submittingOrder}
+        cart={cart}
+      />
     </SafeAreaView>
   );
 };

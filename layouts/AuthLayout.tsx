@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 64,
-    backgroundColor: '#f59e0b', // amber-500
+    backgroundColor: '#f59e0b', 
   },
   decorCircle1: {
     position: 'absolute',
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#fcd34d', // amber-300
+    backgroundColor: '#fcd34d',
     opacity: 0.2,
     transform: [{ rotate: '45deg' }],
   },
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     borderRadius: 125,
-    backgroundColor: '#fde68a', // yellow-300
+    backgroundColor: '#fde68a',
     opacity: 0.2,
   },
   decorCircle3: {
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#fbbf24', // amber-400
+    backgroundColor: '#fbbf24',
     opacity: 0.2,
     transform: [{ rotate: '12deg' }],
   },
@@ -146,12 +146,12 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#92400e', // amber-800
+    color: '#92400e', 
   },
   taglineText: {
     marginTop: 4,
     fontSize: 14,
-    color: '#d97706', // amber-600
+    color: '#d97706', 
   },
   card: {
     backgroundColor: 'white',

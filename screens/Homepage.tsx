@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, StyleSheet, FlatList, Dimensions, ActivityIndicator, SafeAreaView } from "react-native";
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, StyleSheet, FlatList, Dimensions, ActivityIndicator, SafeAreaView, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,6 +7,7 @@ import APIService from "../services/ApiService";
 import { useAuth } from "../contexts/AuthContext";
 import ProductCard from "../components/card/ProductCard";
 import NavBar from "../components/layout/NavBar";
+import CustomAlert from '../components/layout/CustomAlert';
 
 // Types
 interface Product {
@@ -29,13 +30,15 @@ const Homepage: React.FC = () => {
   const navigation = useNavigation() as any;
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]); // Add this state
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]); 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [featuredLoading, setFeaturedLoading] = useState(true); // Add this state
+  const [featuredLoading, setFeaturedLoading] = useState(true); 
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [showAddToCartAlert, setShowAddToCartAlert] = useState(false);
+  const [lastAddedProductId, setLastAddedProductId] = useState<number | null>(null);
 
   // Fetch products, featured products, and categories
   useEffect(() => {
@@ -71,7 +74,7 @@ const Homepage: React.FC = () => {
     };
 
     fetchData();
-    fetchFeaturedProducts(); // Enable this call now that the API works
+    fetchFeaturedProducts(); 
   }, []);
 
   // Fetch cart item count
@@ -111,12 +114,25 @@ const Homepage: React.FC = () => {
   const handleSearch = () => {
   };
 
-  const handleAddToCart = (productId: number) => {
+  const handleAddToCart = async (productId: number) => {
     if (!isAuthenticated) {
-      navigation.navigate("Login");
+      navigation.navigate("Login", { returnTo: "Homepage" });
       return;
     }
-
+    
+    try {
+      await APIService.addToCart(productId, 1);
+      
+      // Update cart count
+      const cartResponse = await APIService.getCart();
+      setCartItemCount(cartResponse.data.items.length);
+      
+      // Set the last added product ID for the alert
+      setLastAddedProductId(productId);
+      setShowAddToCartAlert(true);
+    } catch (error) {
+      Alert.alert("Error", "Failed to add item to cart");
+    }
   };
 
   // Mock data (keep as fallback)
@@ -200,9 +216,8 @@ const Homepage: React.FC = () => {
     );
   };
 
-  // Update renderProduct to apply consistent width:
+  // Update renderProduct to use handleAddToCart:
   const renderProduct = ({ item }: { item: Product }) => {
-    
     const productForCard = {
       id: item.id,
       name: item.name,
@@ -217,8 +232,18 @@ const Homepage: React.FC = () => {
           product={productForCard}
           theme="yellow"
           onPress={() => {
+            if (!isAuthenticated) {
+              navigation.navigate("Login", { 
+                returnTo: "Homepage",
+                productId: item.id // Store the product ID to redirect after login
+              });
+              return;
+            }
+            
+            // User is authenticated, proceed to product detail
             navigation.navigate("ProductDetail", { id: item.id });
           }}
+          onAddToCart={() => handleAddToCart(item.id)}
         />
       </View>
     );
@@ -393,6 +418,22 @@ const Homepage: React.FC = () => {
           )}
         </View>
       </ScrollView>
+
+      <CustomAlert
+        visible={showAddToCartAlert}
+        title="Added to Cart"
+        message="Item successfully added to your cart"
+        primaryAction={{
+          text: "View Cart",
+          onPress: () => navigation.navigate("Cart")
+        }}
+        secondaryAction={{
+          text: "Continue Shopping",
+          onPress: () => {}
+        }}
+        onClose={() => setShowAddToCartAlert(false)}
+        type="success"
+      />
     </SafeAreaView>
   );
 };
@@ -403,7 +444,7 @@ const productWidth = width / 2 - 24;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fffbeb", // amber-50 instead of gray-50
+    backgroundColor: "#fffbeb",
   },
   scrollView: {
     flex: 1,

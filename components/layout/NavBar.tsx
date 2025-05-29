@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
             {/* Main Navbar */}
             <View style={styles.container}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Homepage')}
+                    onPress={() => navigation.navigate('Main', { screen: 'Home' })}
                     style={styles.logoContainer}
                 >
                     <Text style={[styles.logo, { color: logoColor }]}>Glomart</Text>
@@ -48,13 +48,13 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                         <View style={styles.userControls}>
                             <TouchableOpacity
                                 style={styles.iconButton}
-                                onPress={() => {}}
+                                onPress={() => { }}
                             >
                                 <Ionicons name="heart-outline" size={24} color={textColor} />
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.iconButton}
-                                onPress={() => {}}
+                                onPress={() => navigation.navigate('Cart')}
                             >
                                 <Ionicons name="cart-outline" size={24} color={textColor} />
                                 {cartItemsCount > 0 && (
@@ -130,7 +130,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                                             <Text style={styles.userEmail}>{user.email}</Text>
                                         </View>
                                     </View>
-                                    
+
                                     <TouchableOpacity
                                         style={styles.mobileMenuItem}
                                         onPress={() => {
@@ -145,15 +145,12 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
 
                                     <TouchableOpacity
                                         style={styles.mobileMenuItem}
-                                        onPress={() => {
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
+                                        onPress={() => { setIsMenuOpen(false); }}>
                                         <Text style={[styles.mobileMenuItemText, { color: textColor }]}>
                                             Your Orders
                                         </Text>
                                     </TouchableOpacity>
-                                    
+
                                     <TouchableOpacity
                                         style={styles.mobileMenuItem}
                                         onPress={() => {

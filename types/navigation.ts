@@ -1,10 +1,8 @@
-// src/navigation.ts
-
 import { ParamListBase } from '@react-navigation/native'
 
 export type RootStackParamList = {
   // Root stack routes
-  Main: { screen?: 'Home' | 'Categories' | 'Profile' } | undefined
+  Main: { screen?: 'Home' | 'Categories' | 'Profile' | 'Cart' } | undefined
   Login: { message?: string; returnTo?: keyof RootStackParamList } | undefined
   Register: undefined
   

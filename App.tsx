@@ -7,7 +7,9 @@ import { AuthProvider } from './contexts/AuthContext';
 // Import screens
 import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
+import CartScreen from './screens/CartScreen';
 import BottomNav from './components/layout/BottomNav';
+
 
 // Create navigators
 const Stack = createStackNavigator();
@@ -46,6 +48,13 @@ function App() {
             component={RegisterScreen} 
             options={{
               cardStyle: { backgroundColor: 'white' },
+            }}
+          />
+          <Stack.Screen 
+            name="Cart" 
+            component={CartScreen} 
+            options={{
+              cardStyle: { backgroundColor: '#fffbeb' },
             }}
           />
         </Stack.Navigator>

@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform 
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator,KeyboardAvoidingView,Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -317,13 +308,13 @@ const styles = StyleSheet.create({
     color: '#111827', // gray-900
   },
   backButton: {
-    backgroundColor: '#fde68a', // amber-200
+    backgroundColor: '#fde68a', 
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 6,
   },
   backButtonText: {
-    color: '#92400e', // amber-800
+    color: '#92400e', 
     fontWeight: '500',
   },
   successContainer: {
