@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  FlatList,
-  Dimensions,
-  ActivityIndicator,
-  SafeAreaView,
-} from "react-native";
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, StyleSheet, FlatList, Dimensions, ActivityIndicator, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -24,9 +12,11 @@ import NavBar from "../components/layout/NavBar";
 interface Product {
   id: number;
   name: string;
-  price: number;
-  image: string;
-  category: string;
+  price: string; 
+  main_image_path: string;
+  description: string;
+  featured: number; 
+  category?: string; 
 }
 
 interface Category {
@@ -39,32 +29,49 @@ const Homepage: React.FC = () => {
   const navigation = useNavigation() as any;
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]); // Add this state
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [featuredLoading, setFeaturedLoading] = useState(true); // Add this state
   const [cartItemCount, setCartItemCount] = useState(0);
 
-  // Fetch products and categories
+  // Fetch products, featured products, and categories
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          APIService.getProducts(),
-          APIService.getCategories(),
-        ]);
-
-        setProducts(productsRes.data);
-        setFilteredProducts(productsRes.data);
-        setCategories(categoriesRes.data);
+        const productsRes = await APIService.getProducts();
+        
+        // Extract the actual products array from the paginated response
+        const actualProducts: Product[] = productsRes.data.data;
+        
+        setProducts(actualProducts);
+        setFilteredProducts(actualProducts);
         setLoading(false);
       } catch (error) {
-        console.error("Failed to fetch data", error);
+        console.error("Failed to fetch products", error);
         setLoading(false);
       }
     };
 
+    const fetchFeaturedProducts = async () => {
+      try {
+        const featuredRes = await APIService.getFeaturedProducts();
+        
+        // The response is already in the correct format
+        const featuredData: Product[] = featuredRes.data;
+        
+        setFeaturedProducts(featuredData);
+        setFeaturedLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch featured products", error);
+        setFeaturedLoading(false);
+      }
+    };
+
     fetchData();
+    fetchFeaturedProducts(); // Enable this call now that the API works
   }, []);
 
   // Fetch cart item count
@@ -102,20 +109,17 @@ const Homepage: React.FC = () => {
   }, [searchTerm, selectedCategory, products, categories]);
 
   const handleSearch = () => {
-    // Search is handled in useEffect
   };
 
   const handleAddToCart = (productId: number) => {
     if (!isAuthenticated) {
-      // Remove the returnTo parameter since we're simplifying navigation
       navigation.navigate("Login");
       return;
     }
 
-    // Add to cart logic here
   };
 
-  // Mock categories and featured products for initial display
+  // Mock data (keep as fallback)
   const mockCategories = [
     { id: 1, name: "Electronics" },
     { id: 2, name: "Fashion" },
@@ -127,73 +131,105 @@ const Homepage: React.FC = () => {
     { id: 8, name: "Health" },
   ];
 
-  const mockProducts = [
-    { id: 1, name: "Wireless Earbuds", price: 29.99, image: "https://placehold.co/300x300?text=Earbuds", category: "Electronics" },
-    { id: 2, name: "Smart Watch", price: 89.99, image: "https://placehold.co/300x300?text=Watch", category: "Electronics" },
-    { id: 3, name: "Summer T-Shirt", price: 19.99, image: "https://placehold.co/300x300?text=T-Shirt", category: "Fashion" },
-    { id: 4, name: "Kitchen Blender", price: 49.99, image: "https://placehold.co/300x300?text=Blender", category: "Home & Kitchen" },
-    { id: 5, name: "Bluetooth Speaker", price: 39.99, image: "https://placehold.co/300x300?text=Speaker", category: "Electronics" },
-    { id: 6, name: "Running Shoes", price: 59.99, image: "https://placehold.co/300x300?text=Shoes", category: "Fashion" },
-    { id: 7, name: "Coffee Maker", price: 69.99, image: "https://placehold.co/300x300?text=Coffee", category: "Home & Kitchen" },
-    { id: 8, name: "Yoga Mat", price: 24.99, image: "https://placehold.co/300x300?text=Yoga", category: "Sports" },
+  const mockProducts: Product[] = [
+    { id: 1, name: "Wireless Earbuds", price: "29.99", main_image_path: "mock/earbuds.jpg", description: "High quality wireless earbuds", featured: 1 },
+    { id: 2, name: "Smart Watch", price: "89.99", main_image_path: "mock/watch.jpg", description: "Smart watch with fitness tracking", featured: 1 },
+    { id: 3, name: "Summer T-Shirt", price: "19.99", main_image_path: "mock/tshirt.jpg", description: "Comfortable summer t-shirt", featured: 0 },
+    { id: 4, name: "Kitchen Blender", price: "49.99", main_image_path: "mock/blender.jpg", description: "Powerful kitchen blender", featured: 0 },
+    { id: 5, name: "Bluetooth Speaker", price: "39.99", main_image_path: "mock/speaker.jpg", description: "Portable bluetooth speaker", featured: 1 },
+    { id: 6, name: "Running Shoes", price: "59.99", main_image_path: "mock/shoes.jpg", description: "Lightweight running shoes", featured: 0 },
+    { id: 7, name: "Coffee Maker", price: "69.99", main_image_path: "mock/coffee.jpg", description: "Automatic coffee maker", featured: 0 },
+    { id: 8, name: "Yoga Mat", price: "24.99", main_image_path: "mock/yoga.jpg", description: "Non-slip yoga mat", featured: 0 },
   ];
 
-  // Use mock data until API is implemented
-  const displayCategories = categories.length ? categories : mockCategories;
-  const displayProducts = loading ? mockProducts : filteredProducts;
+  // Use real data with fallback to mock data
+  const displayCategories = mockCategories; 
 
-  // Render item for category horizontal list
-  const renderCategory = ({ item }: { item: Category }) => (
-    <TouchableOpacity
-      style={[
-        styles.categoryButton,
-        selectedCategory === item.id && styles.selectedCategoryButton,
-      ]}
-      onPress={() => setSelectedCategory(item.id)}
-    >
-      <Text
-        style={[
-          styles.categoryButtonText,
-          selectedCategory === item.id && styles.selectedCategoryText,
-        ]}
+
+  const displayProducts = (() => {
+    if (loading) {
+      return mockProducts;
+    }
+    
+    if (filteredProducts.length > 0) {
+      return filteredProducts;
+    }
+    return mockProducts;
+  })();
+
+  const displayFeaturedProducts = (() => {
+    if (featuredLoading) {
+      return mockProducts.slice(0, 6);
+    }
+    
+    if (featuredProducts.length > 0) {
+      return featuredProducts;
+    }
+    
+    return mockProducts.filter((product: Product) => product.featured === 1);
+  })();
+
+  // Update renderFlashDeal to always use placeholder images:
+  const renderFlashDeal = ({ item }: { item: Product }) => {
+    
+    const shortenedName = item.name.length > 12 
+      ? item.name.substring(0, 10) + ".."
+      : item.name;
+
+    const productForFlashDeal = {
+      id: item.id,
+      name: item.name,
+      price: parseFloat(item.price),
+      image: `https://placehold.co/120x80/f59e0b/ffffff?text=${encodeURIComponent(shortenedName)}`,
+      category: 'Electronics'
+    };
+    
+    return (
+      <TouchableOpacity
+        style={styles.flashDealItem}
+        onPress={() => navigation.navigate("ProductDetail", { id: item.id })}
       >
-        {item.name}
-      </Text>
-    </TouchableOpacity>
-  );
+        <Image source={{ uri: productForFlashDeal.image }} style={styles.flashDealImage} />
+        <View style={styles.flashDealInfo}>
+          <Text style={styles.flashDealPrice}>
+            ${productForFlashDeal.price.toFixed(2)}
+          </Text>
+          <Text style={styles.flashDealDiscount}>50% OFF</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
-  // Render item for flash deals
-  const renderFlashDeal = ({ item }: { item: Product }) => (
-    <TouchableOpacity
-      style={styles.flashDealItem}
-      onPress={() => navigation.navigate("ProductDetail", { id: item.id })}
-    >
-      <Image source={{ uri: item.image }} style={styles.flashDealImage} />
-      <View style={styles.flashDealInfo}>
-        <Text style={styles.flashDealPrice}>${item.price.toFixed(2)}</Text>
-        <Text style={styles.flashDealDiscount}>50% OFF</Text>
+  // Update renderProduct to apply consistent width:
+  const renderProduct = ({ item }: { item: Product }) => {
+    
+    const productForCard = {
+      id: item.id,
+      name: item.name,
+      price: parseFloat(item.price),
+      image: `https://placehold.co/300x300/fbbf24/000000?text=${encodeURIComponent(item.name)}`,
+      category: 'Electronics'
+    };
+    
+    return (
+      <View style={styles.productCardContainer}>
+        <ProductCard
+          product={productForCard}
+          theme="yellow"
+          onPress={() => {
+            navigation.navigate("ProductDetail", { id: item.id });
+          }}
+        />
       </View>
-    </TouchableOpacity>
-  );
-
-  // Render item for product grid
-  const renderProduct = ({ item }: { item: Product }) => (
-    <ProductCard
-      product={item}
-      theme="yellow"
-      onPress={() => {
-        navigation.navigate("ProductDetail", { id: item.id });
-      }}
-    />
-  );
-
+    );
+  };
   return (
     <SafeAreaView style={styles.container}>
       {/* Navbar */}
       <NavBar cartItemsCount={cartItemCount} theme="yellow" />
 
-      <ScrollView 
-        style={styles.scrollView} 
+      <ScrollView
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
         {/* Hero section with search */}
@@ -253,7 +289,7 @@ const Homepage: React.FC = () => {
                 All Categories
               </Text>
             </TouchableOpacity>
-            
+
             {displayCategories.map((category) => (
               <TouchableOpacity
                 key={category.id}
@@ -294,14 +330,45 @@ const Homepage: React.FC = () => {
               </TouchableOpacity>
             </View>
 
-            <FlatList
-              data={mockProducts.slice(0, 6)}
-              renderItem={renderFlashDeal}
-              keyExtractor={(item) => item.id.toString()}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.flashDealsList}
-            />
+            {featuredLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#fff" />
+              </View>
+            ) : (
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                style={{ marginTop: 12, height: 150 }}
+                contentContainerStyle={{ paddingBottom: 8, paddingTop: 4 }}
+              >
+                {displayFeaturedProducts.map((item, index) => {
+                  // console.log(`Rendering flash deal #${index}:`, item.name, item.price);
+                  
+                  const productForFlashDeal = {
+                    id: item.id,
+                    name: item.name,
+                    price: parseFloat(item.price),
+                    image: `https://placehold.co/120x80/f59e0b/ffffff?text=${encodeURIComponent(item.name.substring(0, 12))}`,
+                  };
+                  
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={[styles.flashDealItem, { marginRight: 12 }]}
+                      onPress={() => navigation.navigate("ProductDetail", { id: item.id })}
+                    >
+                      <Image source={{ uri: productForFlashDeal.image }} style={styles.flashDealImage} />
+                      <View style={styles.flashDealInfo}>
+                        <Text style={styles.flashDealPrice} numberOfLines={1}>
+                          ${productForFlashDeal.price.toFixed(2)}
+                        </Text>
+                        <Text style={styles.flashDealDiscount}>50% OFF</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            )}
           </LinearGradient>
         </View>
 
@@ -321,6 +388,7 @@ const Homepage: React.FC = () => {
               numColumns={2}
               scrollEnabled={false}
               contentContainerStyle={styles.productsGrid}
+              columnWrapperStyle={styles.productRow}
             />
           )}
         </View>
@@ -335,7 +403,7 @@ const productWidth = width / 2 - 24;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9fafb", // bg-gray-50
+    backgroundColor: "#fffbeb", // amber-50 instead of gray-50
   },
   scrollView: {
     flex: 1,
@@ -425,8 +493,10 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 4, 
     elevation: 3,
+    minHeight: 190, // Slightly reduce minimum height
+    paddingBottom: 4, // Add bottom padding
   },
   sectionTitleContainer: {
     flexDirection: "row",
@@ -466,21 +536,28 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 1,
-    width: 100,
+    elevation: 3,
+    width: 120,
+    height: 125, // Slightly reduce height
+    borderWidth: 1,
+    borderColor: "#fff5d2", // Lighter border color
   },
   flashDealImage: {
     width: "100%",
     height: 80,
     resizeMode: "cover",
+    backgroundColor: "#f59e0b", // Add background color to match placeholder
   },
   flashDealInfo: {
     padding: 8,
+    height: 45, // Fixed height for info section
+    justifyContent: "space-between", // Space between price and discount
   },
   flashDealPrice: {
-    color: "#b45309", // amber-700
+    color: "#b45309",
     fontWeight: "700",
     fontSize: 14,
+    marginBottom: 2, // Add spacing
   },
   flashDealDiscount: {
     color: "#dc2626", // red-600
@@ -490,7 +567,7 @@ const styles = StyleSheet.create({
   productsTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#111827", // gray-900
+    color: "#111827",
     marginBottom: 16,
   },
   loadingContainer: {
@@ -499,6 +576,15 @@ const styles = StyleSheet.create({
   },
   productsGrid: {
     paddingBottom: 24,
+    paddingHorizontal: 4,
+  },
+  productRow: {
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  productCardContainer: {
+    width: (width - 48) / 2, // Consistent width calculation
+    marginHorizontal: 4,
   },
 });
 

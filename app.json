@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ecommerce-app",
+    "name": "Glomart",
     "slug": "ecommerce-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/glomart.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -22,14 +22,24 @@
       }
     },
     "android": {
+      "permissions": [
+        "INTERNET"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.chivorn.ecommerceapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "85935250-4bde-43d6-8f12-b86f0333938f"
+      }
+    },
+    "owner": "chivorn"
   }
 }

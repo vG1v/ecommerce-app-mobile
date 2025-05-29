@@ -8,7 +8,7 @@ import { RootStackParamList } from '../../types/navigation';
 interface Product {
   id: number;
   name: string;
-  price: number;
+  price: number | string;
   image: string;
   category?: string;
 }
@@ -74,7 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'default', o
             styles.price, 
             theme === 'yellow' ? styles.priceYellow : styles.priceDefault
           ]}>
-            ${product.price.toFixed(2)}
+            ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
           </Text>
           
           {theme === 'yellow' && (

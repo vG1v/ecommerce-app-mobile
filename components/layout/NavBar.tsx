@@ -39,7 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                     onPress={() => navigation.navigate('Homepage')}
                     style={styles.logoContainer}
                 >
-                    <Text style={[styles.logo, { color: logoColor }]}>E-Shop</Text>
+                    <Text style={[styles.logo, { color: logoColor }]}>Glomart</Text>
                 </TouchableOpacity>
 
                 {/* Right side - User controls */}
@@ -66,7 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
 
                             <TouchableOpacity
                                 style={styles.iconButton}
-                                onPress={() => setIsMenuOpen(true)}
+                                onPress={() => navigation.navigate('Profile')}
                             >
                                 <Ionicons name="person-circle-outline" size={26} color={textColor} />
                             </TouchableOpacity>
@@ -89,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                         </View>
                     )}
 
-                    {/* Mobile menu button */}
+                    {/* Menu button - opens modal with more options */}
                     <TouchableOpacity
                         style={styles.menuButton}
                         onPress={() => setIsMenuOpen(true)}
@@ -118,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                         <View style={styles.mobileMenuItems}>
                             {/* User specific items if logged in */}
                             {user && (
-                                <View style={styles.mobileUserSection}>
+                                <View style={[styles.mobileUserSection, { borderTopColor: isYellow ? '#fde68a' : '#e5e7eb' }]}>
                                     <View style={styles.mobileUserInfo}>
                                         <View style={[styles.avatarIcon, { backgroundColor: isYellow ? '#fde68a' : '#e5e7eb' }]}>
                                             <Text style={[styles.avatarText, { color: isYellow ? '#92400e' : '#4b5563' }]}>
@@ -130,12 +130,12 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemsCount = 0, theme = 'default' }
                                             <Text style={styles.userEmail}>{user.email}</Text>
                                         </View>
                                     </View>
-
-                                    {/* Simple menu items without complex navigation */}
+                                    
                                     <TouchableOpacity
                                         style={styles.mobileMenuItem}
                                         onPress={() => {
                                             setIsMenuOpen(false);
+                                            navigation.navigate('Profile');
                                         }}
                                     >
                                         <Text style={[styles.mobileMenuItemText, { color: textColor }]}>
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     mobileMenuItems: {
-        paddingTop: 16,
+        paddingTop: 0,
     },
     mobileMenuItem: {
         flexDirection: 'row',
@@ -335,10 +335,8 @@ const styles = StyleSheet.create({
         borderRadius: 2,
     },
     mobileUserSection: {
-        marginTop: 16,
-        borderTopWidth: 1,
-        borderTopColor: '#e5e7eb',
-        paddingTop: 16,
+        marginTop: 0,
+        paddingTop: 8,
     },
     mobileUserInfo: {
         flexDirection: 'row',

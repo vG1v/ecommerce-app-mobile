@@ -2,48 +2,18 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
 import { AuthProvider } from './contexts/AuthContext';
 
 // Import screens
 import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
-import Homepage from './screens/Homepage';
+import BottomNav from './components/layout/BottomNav';
 
 // Create navigators
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
 
-// Bottom tab navigator for main app screens
-function MainTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-          
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Categories') {
-            iconName = focused ? 'grid' : 'grid-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
-          
-          return <Ionicons name={iconName as any} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: 'gray',
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={Homepage} />
-      <Tab.Screen name="Categories" component={Homepage} />
-      <Tab.Screen name="Profile" component={Homepage} />
-    </Tab.Navigator>
-  );
-}
+// Create a wrapper component outside the App function
+const MainScreen = () => <BottomNav theme="amber" />;
 
 // Root stack that contains both tab navigation and auth screens
 function App() {
@@ -57,19 +27,18 @@ function App() {
             cardStyle: { backgroundColor: 'white' }
           }}
         >
-          {/* Main tabs with NO animation */}
+          {/* Use the wrapper component */}
           <Stack.Screen 
             name="Main" 
-            component={MainTabs} 
+            component={MainScreen} 
+            options={{
+            }}
           />
-          
-          {/* Auth screens WITH stack animation */}
           <Stack.Screen 
             name="Login" 
             component={LoginScreen} 
             options={{
               cardStyle: { backgroundColor: 'white' },
-              // Default animation is enabled (no need to specify)
             }}
           />
           <Stack.Screen 
@@ -77,7 +46,6 @@ function App() {
             component={RegisterScreen} 
             options={{
               cardStyle: { backgroundColor: 'white' },
-              // Default animation is enabled (no need to specify)
             }}
           />
         </Stack.Navigator>

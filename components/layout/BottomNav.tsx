@@ -4,23 +4,36 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Import screens
 import Homepage from '../../screens/Homepage';
-// Import other screens as you build them
+import ProfileScreen from '../../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
 interface BottomNavProps {
   initialRouteName?: string;
-  backgroundColor?: string;
-  activeTintColor?: string;
-  inactiveTintColor?: string;
+  theme?: 'amber' | 'default';
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({
   initialRouteName = 'Home',
-  backgroundColor = '#FFFFFF',
-  activeTintColor = '#2563eb',
-  inactiveTintColor = '#6B7280',
+  theme = 'amber'
 }) => {
+  // Amber theme colors based on your design system
+  const amberTheme = {
+    activeTintColor: '#f59e0b',      // amber-500
+    inactiveTintColor: '#6b7280',    // gray-500
+    backgroundColor: '#fffbeb',      // amber-50
+    borderTopColor: '#fde68a',       // amber-200
+  };
+
+  const defaultTheme = {
+    activeTintColor: '#2563eb',      // blue-600
+    inactiveTintColor: '#6b7280',    // gray-500
+    backgroundColor: '#ffffff',      // white
+    borderTopColor: '#e5e7eb',       // gray-200
+  };
+
+  const colors = theme === 'amber' ? amberTheme : defaultTheme;
+
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
@@ -28,34 +41,29 @@ const BottomNav: React.FC<BottomNavProps> = ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           
-          // Define icons for each tab
-          switch (route.name) {
-            case 'Home':
-              iconName = focused ? 'home' : 'home-outline';
-              break;
-            case 'Products':
-              iconName = focused ? 'grid' : 'grid-outline';
-              break;
-            case 'Dashboard':
-              iconName = focused ? 'apps' : 'apps-outline';
-              break;
-            default:
-              iconName = 'help-circle-outline';
+          // Updated to match your screen names
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Categories') {
+            iconName = focused ? 'grid' : 'grid-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
           }
           
           return <Ionicons name={iconName as any} size={size} color={color} />;
         },
-        tabBarActiveTintColor: activeTintColor,
-        tabBarInactiveTintColor: inactiveTintColor,
+        tabBarActiveTintColor: colors.activeTintColor,
+        tabBarInactiveTintColor: colors.inactiveTintColor,
         tabBarStyle: {
-          backgroundColor: backgroundColor,
-          // Optional: add shadow effects
+          backgroundColor: colors.backgroundColor,
+          borderTopColor: colors.borderTopColor,
+          borderTopWidth: 1,
+          // Premium shadow effects for depth
           shadowColor: '#000',
           shadowOpacity: 0.1,
           shadowRadius: 3,
           shadowOffset: { width: 0, height: -3 },
           elevation: 5,
-          height: 60,
           paddingBottom: 5,
           paddingTop: 5,
         },
@@ -63,8 +71,8 @@ const BottomNav: React.FC<BottomNavProps> = ({
       })}
     >
       <Tab.Screen name="Home" component={Homepage} />
-      <Tab.Screen name="Products" component={Homepage} />
-      <Tab.Screen name="Dashboard" component={Homepage} />
+      <Tab.Screen name="Categories" component={Homepage} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };
