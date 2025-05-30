@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -20,6 +21,8 @@ const MainScreen = () => <BottomNav theme="amber" />;
 
 // Root stack that contains both tab navigation and auth screens
 function App() {
+  console.log('App component is rendering...');
+  
   return (
     <AuthProvider>
       <StatusBar style="auto" />
